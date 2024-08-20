@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/Company-Data-Finder/static/css/main.ea633372.css",
+    "main.js": "/Company-Data-Finder/static/js/main.72f785dd.js",
+    "index.html": "/Company-Data-Finder/index.html",
+    "main.ea633372.css.map": "/Company-Data-Finder/static/css/main.ea633372.css.map",
+    "main.72f785dd.js.map": "/Company-Data-Finder/static/js/main.72f785dd.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.ea633372.css",
+    "static/js/main.72f785dd.js"
+  ]
+}
