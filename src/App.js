@@ -14,10 +14,41 @@ import {
   InputRightElement,
   IconButton,
   Circle,
+  Table,
+  Thead,
+  Tbody,
+  Tr,
+  Th,
+  Td,
 } from '@chakra-ui/react';
 import { ArrowForwardIcon } from '@chakra-ui/icons';
 import axios from 'axios';
 import Papa from 'papaparse';
+
+const tableStyles = {
+  table: {
+    borderCollapse: 'separate',
+    borderSpacing: 0,
+    borderRadius: '8px',
+    overflow: 'hidden',
+    boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)',
+    width: '100%',
+  },
+  th: {
+    bg: 'gray.50',
+    color: 'gray.600',
+    fontWeight: 'semibold',
+    px: 4,
+    py: 2,
+    textAlign: 'left',
+  },
+  td: {
+    px: 4,
+    py: 2,
+    borderTop: '1px',
+    borderColor: 'gray.100',
+  },
+};
 
 function App() {
   const [input, setInput] = useState('');
@@ -43,6 +74,31 @@ function App() {
       link.click();
       document.body.removeChild(link);
     }
+  };
+
+  const renderTable = (data) => {
+    return (
+      <Box overflowX="auto" my={4}>
+        <Table variant="simple" size="sm" borderRadius="lg" boxShadow="sm">
+          <Thead bg="gray.100">
+            <Tr>
+              {Object.keys(data[0]).map((header, index) => (
+                <Th key={index} textAlign="left" py={2} px={3}>{header}</Th>
+              ))}
+            </Tr>
+          </Thead>
+          <Tbody>
+            {data.map((row, rowIndex) => (
+              <Tr key={rowIndex}>
+                {Object.values(row).map((cell, cellIndex) => (
+                  <Td key={cellIndex} py={2} px={3}>{cell}</Td>
+                ))}
+              </Tr>
+            ))}
+          </Tbody>
+        </Table>
+      </Box>
+    );
   };
 
   const sendMessage = async () => {
@@ -91,13 +147,66 @@ function App() {
               {messages.map((message, index) => (
                 <Box
                   key={index}
-                  bg={message.sender === 'user' ? 'blue.100' : 'gray.100'}
+                  bg={message.role === 'user' ? 'blue.100' : 'gray.100'}
                   p={3}
                   borderRadius="lg"
-                  alignSelf={message.sender === 'user' ? 'flex-end' : 'flex-start'}
-                  maxW="70%"
+                  alignSelf={message.role === 'user' ? 'flex-end' : 'flex-start'}
+                  maxW="80%"
                 >
-                  <Text>{message.content}</Text>
+                  {message.content.startsWith('<table>') ? (
+                    <Box
+                      dangerouslySetInnerHTML={{ __html: message.content }}
+                      sx={{
+                        'table': {
+                          borderCollapse: 'separate',
+                          borderSpacing: 0,
+                          width: '100%',
+                          borderRadius: '8px',
+                          overflow: 'hidden',
+                          boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+                        },
+                        'th, td': {
+                          border: '1px solid #e2e8f0',
+                          padding: '8px 12px',
+                          textAlign: 'left',
+                        },
+                        'th': {
+                          backgroundColor: '#f7fafc',
+                          fontWeight: 'bold',
+                        },
+                        'tr:last-child td:first-child': { borderBottomLeftRadius: '8px' },
+                        'tr:last-child td:last-child': { borderBottomRightRadius: '8px' },
+                        '@media (max-width: 480px)': {
+                          'table, thead, tbody, th, td, tr': {
+                            display: 'block',
+                          },
+                          'thead tr': {
+                            position: 'absolute',
+                            top: '-9999px',
+                            left: '-9999px',
+                          },
+                          'tr': { marginBottom: '10px' },
+                          'td': {
+                            border: 'none',
+                            position: 'relative',
+                            paddingLeft: '50%',
+                          },
+                          'td:before': {
+                            position: 'absolute',
+                            top: '6px',
+                            left: '6px',
+                            width: '45%',
+                            paddingRight: '10px',
+                            whiteSpace: 'nowrap',
+                            content: 'attr(data-label)',
+                            fontWeight: 'bold',
+                          },
+                        },
+                      }}
+                    />
+                  ) : (
+                    <Text>{message.content}</Text>
+                  )}
                 </Box>
               ))}
             </VStack>
